@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import random
+from numpy import random
 
 class Node:
     def __init__(self, position, parent = None, clildren = None):
@@ -16,7 +16,7 @@ class RRT:
 
     #generate a random position in the domain
     def q_rand(self):
-        position = [random.randint(0, self.planning_domain[0]), random.randint(0, self.planning_domain[1])]
+        position = [random.rand()*self.planning_domain[0], random.rand()*self.planning_domain[1]]
         return position
 
     #finds the vertex in G that is closest to the given position
@@ -32,13 +32,10 @@ class RRT:
 
     #generate a new configuration
     def q_new(self, near_vertex, rand_posi):
-        dis = np.sqrt((rand_posi[0]-near_vertex[0])**2+(rand_posi[1]-near_vertex[1])**2)
-        #print(dis)
-        vector = ((rand_posi[0]-near_vertex[0]), rand_posi[1]-near_vertex[1])
+        dis = np.sqrt((rand_posi[0]-near_vertex[0])**2+(rand_posi[1]-near_vertex[1])**2) #distance between random position and the current point
+        vector = ((rand_posi[0]-near_vertex[0]), rand_posi[1]-near_vertex[1]) #vector points to the random position
         
-        #print(vector)
-        V = np.array(vector) #vector
-        #print(V)
+        V = np.array(vector) 
         N = np.array(near_vertex) 
 
         new_pos = N + self.delta_d/dis*V #display the new position, list
@@ -53,17 +50,19 @@ class RRT:
         plt.plot(self.init_position[0], self.init_position[1], marker = "o", markersize = 3, color = 'blue')
         for k in range(K):
             rand_pos = self.q_rand()
-            #print(node[k].position)
             near_pos = self.q_near(rand_pos, node)          
             new_pos = Node(self.q_new(near_pos, rand_pos),G) #this is a Node
             node.append(new_pos)
-            #print(new_pos.position)
             new_x = (near_pos[0],new_pos.position[0])
             new_y = (near_pos[1],new_pos.position[1])
             ax.plot(new_x, new_y, color = 'blue') #plot the line
             plt.plot(new_pos.position[0], new_pos.position[1], marker = "o", markersize = 3, color = 'blue') #plot the point
-        ax.set_xlim(0, 100)
-        ax.set_ylim(0, 100)
+            ax.set_xlim(0, 100)
+            ax.set_ylim(0, 100)
+            plt.pause(0.001)
+            plt.title(str(K+1)+" Iterations")
+            plt.xlabel("X Range")
+            plt.ylabel("Y Range")
         plt.show()
 
 def main():
